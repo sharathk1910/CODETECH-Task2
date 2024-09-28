@@ -1,0 +1,77 @@
+
+import pandas as pd
+import numpy as np
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LogisticRegression
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.svm import SVC
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, classification_report
+​
+iris = load_iris()
+df = pd.DataFrame(iris.data, columns=iris.feature_names)  # Corrected Line
+df['target'] = iris.target
+​
+scaler = StandardScaler()
+X = scaler.fit_transform(df.drop('target', axis=1))
+y = df['target']
+​
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+​
+model_performance = {}
+​
+# Training and testing Logistic regression model
+log_reg = LogisticRegression(max_iter=200)
+log_reg.fit(X_train, y_train)
+y_pred_log_reg = log_reg.predict(X_test)
+model_performance['Logistic Regression'] = {
+    'Accuracy': accuracy_score(y_test, y_pred_log_reg),
+    'Precision': precision_score(y_test, y_pred_log_reg, average='macro'),
+    'Recall': recall_score(y_test, y_pred_log_reg, average='macro'),
+    'F1 Score': f1_score(y_test, y_pred_log_reg, average='macro')
+}
+​
+# Training and testing decision trees model
+decision_tree = DecisionTreeClassifier(random_state=42)
+decision_tree.fit(X_train, y_train)
+y_pred_dt = decision_tree.predict(X_test)
+model_performance['Decision Tree'] = {
+    'Accuracy': accuracy_score(y_test, y_pred_dt),
+    'Precision': precision_score(y_test, y_pred_dt, average='macro'),
+    'Recall': recall_score(y_test, y_pred_dt, average='macro'),
+    'F1 Score': f1_score(y_test, y_pred_dt, average='macro')
+}
+​
+# Training and testing random forest model
+random_forest = RandomForestClassifier(random_state=42)
+random_forest.fit(X_train, y_train)
+y_pred_rf = random_forest.predict(X_test)
+model_performance['Random Forest'] = {
+    'Accuracy': accuracy_score(y_test, y_pred_rf),
+    'Precision': precision_score(y_test, y_pred_rf, average='macro'),
+    'Recall': recall_score(y_test, y_pred_rf, average='macro'),
+    'F1 Score': f1_score(y_test, y_pred_rf, average='macro')
+}
+​
+# Training and testing support vector machine model
+svm = SVC(kernel='linear')
+svm.fit(X_train, y_train)
+y_pred_svm = svm.predict(X_test)
+model_performance['SVM'] = {
+    'Accuracy': accuracy_score(y_test, y_pred_svm),
+    'Precision': precision_score(y_test, y_pred_svm, average='macro'),
+    'Recall': recall_score(y_test, y_pred_svm, average='macro'),
+    'F1 Score': f1_score(y_test, y_pred_svm, average='macro')
+}
+​
+# Metrics for classification models
+for model, metrics in model_performance.items():
+    print(f"\n{model} Performance:")
+    for metric, score in metrics.items():
+        print(f"{metric}: {score:.4f}")
+​
+print("\nClassification Report for Random Forest:")
+print(classification_report(y_test, y_pred_rf, target_names=iris.target_names))
+​
